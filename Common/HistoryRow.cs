@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Server.Database;
 
-namespace Server.SoapServices
+namespace Common
 {
     [DataContract]
     public class HistoryRow

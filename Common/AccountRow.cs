@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Server.SoapServices
+namespace Common
 {
     [DataContract]
     public class AccountRow

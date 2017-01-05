@@ -1,19 +1,15 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Web;
-using Server.Configurations;
-using Server.Utils;
+using Common;
 
-namespace Server.RestServices
+namespace Server.Utils
 {
-    public class AuthorizationManager : ServiceAuthorizationManager
+    public abstract class AuthorizationManager : ServiceAuthorizationManager
     {
-        private static BankInfo _bankInfo;
         private static IncomingWebRequestContext IncomingContext => WebOperationContext.Current?.IncomingRequest;
         private static OutgoingWebResponseContext OutgoingContext => WebOperationContext.Current?.OutgoingResponse;
-
-        private static BankInfo LocalBankInfo
-            => _bankInfo = _bankInfo ?? BankMapping.Mappings[BankMapping.LocalBankNumber];
 
         protected override bool CheckAccessCore(OperationContext operationContext)
         {
@@ -23,8 +19,19 @@ namespace Server.RestServices
                 var credentials = AuthorizationHeader.GetCredentials(authHeader);
                 if (credentials.Length == 2)
                 {
-                    if ((credentials[0] == LocalBankInfo.Username) && (credentials[1] == LocalBankInfo.Password))
-                        return true;
+                    try
+                    {
+                        if (ValidateLoginData(credentials[0], credentials[1]))
+                        {
+                            WcfOperationContext.Current.Items.Add("Username", credentials[0]);
+                            return true;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        OutgoingContext.StatusCode = HttpStatusCode.InternalServerError;
+                        return false;
+                    }
 
                     OutgoingContext.StatusCode = HttpStatusCode.Forbidden;
                     return false;
@@ -35,5 +42,7 @@ namespace Server.RestServices
             OutgoingContext.StatusCode = HttpStatusCode.Unauthorized;
             return false;
         }
+
+        protected abstract bool ValidateLoginData(string username, string password);
     }
 }

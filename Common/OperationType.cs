@@ -1,4 +1,4 @@
-﻿namespace Server.Database
+﻿namespace Common
 {
     public enum OperationType
     {

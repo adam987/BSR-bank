@@ -23,7 +23,7 @@ namespace Server.Database.Schema
 	
 	
 	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="BankDatabase")]
-	public partial class DatabaseMappingDataContext : System.Data.Linq.DataContext
+	public partial class DatabaseDataContext : System.Data.Linq.DataContext
 	{
 		
 		private static System.Data.Linq.Mapping.MappingSource mappingSource = new AttributeMappingSource();
@@ -41,31 +41,31 @@ namespace Server.Database.Schema
     partial void DeleteHistory(History instance);
     #endregion
 		
-		public DatabaseMappingDataContext() : 
+		public DatabaseDataContext() : 
 				base(global::Server.Properties.Settings.Default.BankDatabaseConnectionString1, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public DatabaseMappingDataContext(string connection) : 
+		public DatabaseDataContext(string connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public DatabaseMappingDataContext(System.Data.IDbConnection connection) : 
+		public DatabaseDataContext(System.Data.IDbConnection connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public DatabaseMappingDataContext(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
+		public DatabaseDataContext(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public DatabaseMappingDataContext(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
+		public DatabaseDataContext(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();

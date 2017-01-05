@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Server.Utils
+namespace Common
 {
     public static class AuthorizationHeader
     {

@@ -17,7 +17,7 @@ namespace Server.Configurations
 
         private static void AddCustomers()
         {
-            using (var context = new DatabaseMappingDataContext())
+            using (var context = new DatabaseDataContext())
             {
                 var file = new StreamReader("customers.txt");
                 string line;
@@ -33,7 +33,7 @@ namespace Server.Configurations
 
         private static void AddAccounts()
         {
-            using (var context = new DatabaseMappingDataContext())
+            using (var context = new DatabaseDataContext())
             {
                 var file = new StreamReader("accounts.txt");
                 string line;

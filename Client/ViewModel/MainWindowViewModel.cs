@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using Server.SoapServices;
+using Common;
 
 namespace Client.ViewModel
 {

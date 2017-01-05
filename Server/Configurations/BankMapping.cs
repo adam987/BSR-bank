@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Net;
 
 namespace Server.Configurations
 {
@@ -25,15 +24,10 @@ namespace Server.Configurations
                 if (LocalBankNumber == null)
                     LocalBankNumber = parts[0];
 
-                var addressParts = parts[1].Split(':');
-
-                IPAddress ipAddress;
                 var username = parts.ElementAtOrDefault(2) ?? "admin";
-                var password = parts.ElementAtOrDefault(3) ?? "admin";
+                var password = parts.ElementAtOrDefault(3) ?? "pass";
 
-                var bankInfo = IPAddress.TryParse(addressParts[0], out ipAddress)
-                    ? new BankInfo(new IPEndPoint(ipAddress, int.Parse(addressParts[1])), username, password)
-                    : new BankInfo(parts[1], username, password);
+                var bankInfo = new BankInfo(parts[1], username, password);
                 MappingsDictionary[parts[0]] = bankInfo;
             }
         }
