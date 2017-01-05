@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+using Server.Configurations;
 using Server.RestServices;
 using Server.SoapServices;
 
@@ -13,6 +14,11 @@ namespace Server
 
         private static void Main(string[] args)
         {
+            Console.WriteLine("Initialiazing...");
+            DatabaseAccounts.Initialize();
+            BankMapping.Initialize();
+            Console.WriteLine("Initialized");
+
             var serviceHosts = Services.Select(service =>
             {
                 Console.WriteLine($"Starting {service.Name}");

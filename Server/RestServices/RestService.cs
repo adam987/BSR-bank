@@ -1,17 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
+﻿using System.ServiceModel.Web;
+using Server.Database;
+using Server.Utils;
 
 namespace Server.RestServices
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "RestService" in both code and config file together.
     public class RestService : IRestService
     {
-        public void DoWork()
+        private readonly IDatabaseHandler _database = new DatabaseHandler();
+        private static OutgoingWebResponseContext Response => WebOperationContext.Current?.OutgoingResponse;
+
+        public void Transfer(Transfer transfer)
         {
+            try
+            {
+                _database.ReceiveTransfer(transfer);
+            }
+            catch
+            {
+                
+            }
         }
     }
 }

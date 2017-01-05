@@ -51,8 +51,11 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -61,17 +64,51 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\HistoryRow.cs" />
+    <Compile Include="Configurations\BankInfo.cs" />
+    <Compile Include="Configurations\BankMapping.cs" />
+    <Compile Include="Configurations\DatabaseAccounts.cs" />
+    <Compile Include="RestServices\AuthorizationManager.cs" />
+    <Compile Include="RestServices\RestServiceClient.cs" />
+    <Compile Include="RestServices\ServiceException.cs" />
+    <Compile Include="SoapServices\AuthorizationManager.cs" />
+    <Compile Include="Utils\AuthorizationHeader.cs" />
+    <Compile Include="Utils\Transfer.cs" />
+    <Compile Include="SoapServices\AccountRow.cs" />
+    <Compile Include="Database\DatabaseHandler.cs" />
+    <Compile Include="Database\Schema\DatabaseMapping.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DatabaseMapping.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Database\OperationType.cs" />
+    <Compile Include="SoapServices\HistoryRow.cs" />
     <Compile Include="Database\IDatabaseHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="RestServices\IRestService.cs" />
     <Compile Include="RestServices\RestService.cs" />
     <Compile Include="SoapServices\ISoapService.cs" />
     <Compile Include="SoapServices\SoapService.cs" />
+    <Compile Include="Utils\AccountNumber.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Database\Schema\DatabaseMapping.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>DatabaseMapping.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
@@ -86,14 +123,23 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Database\BankDatabase.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Database\Schema\BankDatabase.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Database\BankDatabase_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Database\Schema\BankDatabase_log.ldf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>BankDatabase.mdf</DependentUpon>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Database\Schema\DatabaseMapping.dbml.layout">
+      <DependentUpon>DatabaseMapping.dbml</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

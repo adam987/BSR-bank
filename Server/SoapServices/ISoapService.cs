@@ -1,17 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
 using System.ServiceModel;
-using System.Text;
 
 namespace Server.SoapServices
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the interface name "ISoapService" in both code and config file together.
     [ServiceContract]
     public interface ISoapService
     {
         [OperationContract]
-        void DoWork();
+        List<HistoryRow> GetHistory(string accountNumber);
+
+        [OperationContract]
+        List<AccountRow> GetAccounts();
+
+        [OperationContract]
+        void Withdraw(string accountNumber, string title, decimal amount);
+
+        [OperationContract]
+        void Deposit(string accountNumber, string title, decimal amount);
+
+        [OperationContract]
+        void Charge(string accountNumber, string title, decimal amount);
     }
 }
