@@ -36,6 +36,13 @@ namespace Server.ServiceConfigurations
         {
             var exception = AdjustException((dynamic) error);
 
+            var response = WebOperationContext.Current?.OutgoingResponse;
+            if (response != null)
+            {
+                response.ContentType = "application/json";
+                response.StatusCode = exception.StatusCode;
+            }
+
             fault = Message.CreateMessage(version, exception.Action, exception.Detail,
                 new DataContractJsonSerializer(exception.Detail.GetType()));
 
