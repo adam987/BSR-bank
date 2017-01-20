@@ -45,6 +45,10 @@ namespace Server.Validators
                 throw new FormatException("Invalid amount");
             }
 
+
+            if (Math.Round(amount*100) != amount*100)
+                throw new FormatException("Invalid amount");
+
             if (amount <= 0)
                 throw new FormatException("Amount less than or equal to 0");
 

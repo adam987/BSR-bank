@@ -17,6 +17,6 @@
         /// </summary>
         /// <param name="amount">decimal amount</param>
         /// <returns>service string</returns>
-        public static string ToServiceString(this decimal amount) => $"{(int) (amount*100)}";
+        public static string ToServiceString(this decimal amount) => $"{amount*100}";
     }
 }

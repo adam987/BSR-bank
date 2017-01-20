@@ -1,7 +1,6 @@
 ﻿using Server.Database;
 using Server.Database.Commands;
 using Server.ServiceConfigurations;
-using Server.Utils;
 
 namespace Server.SoapServices
 {

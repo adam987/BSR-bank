@@ -8,7 +8,7 @@ using Server.Exceptions;
 namespace Server.Database.Commands
 {
     /// <summary>
-    ///     Operation commmand (without transfer command)
+    ///     Operation commmand (deposit, withdraw, charge)
     /// </summary>
     public class Operation : IDatabaseCommand
     {

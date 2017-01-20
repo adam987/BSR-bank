@@ -59,7 +59,7 @@ namespace Server.ServiceConfigurations
         }
 
         /// <summary>
-        ///     Called befor request is passed to client
+        ///     Called before response is passed to client
         /// </summary>
         /// <param name="operationName">operation name</param>
         /// <param name="outputs">output parameters</param>

@@ -19,7 +19,7 @@ namespace Server.Exceptions
         }
 
         /// <summary>
-        ///     Transfor exception to REST exception format
+        ///     Transforms exception to REST exception format
         /// </summary>
         /// <returns>REST exception</returns>
         public WebFaultException<ServiceExceptionBody> TransformToWebFaultException()

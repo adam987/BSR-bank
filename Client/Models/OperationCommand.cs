@@ -103,7 +103,7 @@ namespace Client.Models
             catch (MessageSecurityException)
             {
                 _operation.Accounts = new ObservableCollection<AccountRow>();
-                _operation.HandleCommandException(new Exception("Not authorized"));
+                _operation.HandleCommandException(new Exception("Unauthorized"));
             }
             catch (FaultException ex)
             {
@@ -115,7 +115,7 @@ namespace Client.Models
             }
             catch (Exception)
             {
-                _operation.HandleCommandException(new Exception("Inner client exception"));
+                _operation.HandleCommandException(new Exception("Internal client exception"));
             }
         }
 
