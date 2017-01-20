@@ -3,8 +3,12 @@ using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
-namespace Common
+namespace Common.Utils
 {
+    /// <summary>
+    ///     Service client with basic authorization implementation
+    /// </summary>
+    /// <typeparam name="TChannel">service contract</typeparam>
     public abstract class ClientBaseWithAuthorization<TChannel> : ClientBase<TChannel> where TChannel : class
     {
         protected ClientBaseWithAuthorization(string endpointConfigurationName)
@@ -19,6 +23,10 @@ namespace Common
 
         protected void AddAuthorizationHeader()
         {
+            if (string.IsNullOrEmpty(ClientCredentials?.UserName.UserName) ||
+                string.IsNullOrEmpty(ClientCredentials?.UserName.Password))
+                return;
+
             var messageProperty = new HttpRequestMessageProperty();
             messageProperty.Headers.Add(HttpRequestHeader.Authorization,
                 AuthorizationHeader.CreateAuthorizationHeader(ClientCredentials?.UserName.UserName,

@@ -1,9 +1,13 @@
 ﻿using Server.Database;
 using Server.Database.Commands;
+using Server.ServiceConfigurations;
 using Server.Utils;
 
 namespace Server.SoapServices
 {
+    /// <summary>
+    ///     SOAP service authorization manager
+    /// </summary>
     public class SoapAuthorizationManager : AuthorizationManager
     {
         protected override bool ValidateLoginData(string username, string password)

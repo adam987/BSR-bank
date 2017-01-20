@@ -42,13 +42,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountRow.cs" />
-    <Compile Include="AuthorizationHeader.cs" />
-    <Compile Include="ClientBaseWithAuthorization.cs" />
-    <Compile Include="HistoryRow.cs" />
-    <Compile Include="ISoapService.cs" />
-    <Compile Include="OperationType.cs" />
+    <Compile Include="Contracts\AccountRow.cs" />
+    <Compile Include="Utils\AmountConverter.cs" />
+    <Compile Include="Utils\AuthorizationHeader.cs" />
+    <Compile Include="Utils\ClientBaseWithAuthorization.cs" />
+    <Compile Include="Contracts\HistoryRow.cs" />
+    <Compile Include="Contracts\ISoapService.cs" />
+    <Compile Include="Contracts\OperationDetails.cs" />
+    <Compile Include="Contracts\OperationType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Contracts\TransferDetails.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

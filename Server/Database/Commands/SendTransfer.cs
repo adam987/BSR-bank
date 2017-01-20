@@ -1,63 +1,109 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
+using Common.Contracts;
+using Common.Utils;
 using Server.Database.Schema;
+using Server.Exceptions;
 using Server.RestServices;
 using Server.Utils;
 
 namespace Server.Database.Commands
 {
-    public class SendTransfer
+    /// <summary>
+    ///     Send transfer command
+    /// </summary>
+    public class SendTransfer : IDatabaseCommand
     {
-        private readonly Transfer _transfer;
+        private readonly TransferDetails _transferDetails;
         private readonly string _username;
 
-        public SendTransfer(Transfer transfer, string username)
+        /// <summary>
+        ///     Command constructor
+        /// </summary>
+        /// <param name="transferDetails">transfer details</param>
+        /// <param name="username">username</param>
+        public SendTransfer(TransferDetails transferDetails, string username)
         {
-            _transfer = transfer;
+            _transferDetails = transferDetails;
             _username = username;
         }
 
+        /// <summary>
+        ///     Command executor
+        /// </summary>
+        /// <param name="context">database context</param>
         public void Execute(DatabaseDataContext context)
         {
-            if (!_transfer.Amount.HasValue)
-                throw new ArgumentNullException(nameof(_transfer.Amount), "Missing amount");
-
-            if (_transfer.Amount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(_transfer.Amount), "Value equal or less than zero");
-
-            var account = context.Accounts.SingleOrDefault(acc => acc.Number == _transfer.SenderAccount);
+            var account = context.Accounts.SingleOrDefault(acc => acc.Number == _transferDetails.SenderAccount);
             if (account == null)
-                throw new InvalidOperationException("Account doesn't exist");
+                throw new NotFoundException("Account doesn't exist");
 
             if (account.Customer1.Username != _username)
-                throw new InvalidOperationException("Account doesn't belong to user");
+                throw new NotFoundException("Account doesn't belong to user");
 
-            if (_transfer.Amount.Value > account.Balance)
-                throw new InvalidOperationException("Amount is bigger than balance");
+            var amount = _transferDetails.Amount.ToDecimal();
+            if (amount > account.Balance)
+                throw new OperationException("Amount is bigger than balance");
 
-            account.Balance -= _transfer.Amount.Value;
+            try
+            {
+                account.Balance -= amount;
+            }
+            catch (Exception e)
+            {
+                throw new OperationException(e.Message);
+            }
 
-            if (_transfer.ReceiverAccountNumber.IsLocalBank())
-                DatabaseHandler.Execute(new ReceiveTransfer(_transfer));
+            if (AccountNumber.IsLocalBank(_transferDetails.ReceiverAccount))
+                new ReceiveTransfer(_transferDetails).Execute(context, false);
             else
             {
-                var bankInfo = _transfer.ReceiverAccountNumber.GetBankInfo();
+                var bankInfo = AccountNumber.GetBankInfo(_transferDetails.ReceiverAccount);
 
-                using (var client = new RestServiceClient(bankInfo.Url))
+                try
                 {
-                    client.ClientCredentials.UserName.UserName = bankInfo.Username;
-                    client.ClientCredentials.UserName.Password = bankInfo.Password;
-                    client.Transfer(_transfer);
+                    using (var client = new RestServiceClient(bankInfo.Url))
+                    {
+                        client.ClientCredentials.UserName.UserName = bankInfo.Username;
+                        client.ClientCredentials.UserName.Password = bankInfo.Password;
+                        client.Transfer(_transferDetails);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var webException = ex.InnerException as WebException;
+                    if (webException?.Response == null)
+                        throw new OperationException("Could not transfer to remote bank");
+
+                    ServiceExceptionBody body;
+                    HttpStatusCode statusCode;
+
+                    try
+                    {
+                        var response = (HttpWebResponse) webException.Response;
+                        statusCode = response.StatusCode;
+                        body = response.GetBody<ServiceExceptionBody>();
+                    }
+                    catch
+                    {
+                        throw new OperationException("Invalid remote server response");
+                    }
+
+                    throw new OperationException(
+                        $"Remote server returned: {statusCode}. Message: {body.Error}");
                 }
             }
 
             context.Histories.InsertOnSubmit(new History
             {
-                AccountNumber = _transfer.SenderAccount,
-                Amount = -_transfer.Amount.Value,
+                AccountNumber = _transferDetails.SenderAccount,
+                Amount = -amount,
                 Result = account.Balance,
-                Title = _transfer.Title,
-                ConnectedAccount = _transfer.ReceiverAccount
+                Title = _transferDetails.Title,
+                ConnectedAccount = _transferDetails.ReceiverAccount,
+                OperationType = OperationType.Transfer.ToString().ToUpperInvariant(),
+                Date = DateTime.Now
             });
             context.SubmitChanges();
         }

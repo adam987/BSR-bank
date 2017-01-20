@@ -1,54 +1,70 @@
 ﻿using System;
 using System.Linq;
-using Common;
+using Common.Contracts;
+using Common.Utils;
 using Server.Database.Schema;
-using Server.Utils;
+using Server.Exceptions;
 
 namespace Server.Database.Commands
 {
+    /// <summary>
+    ///     Operation commmand (without transfer command)
+    /// </summary>
     public class Operation : IDatabaseCommand
     {
-        private readonly AccountNumber _accountNumber;
-        private readonly decimal _amount;
+        private readonly OperationDetails _details;
         private readonly OperationType _operationType;
-        private readonly string _title;
         private readonly string _username;
 
-        public Operation(AccountNumber accountNumber, string title, decimal amount, OperationType operationType,
-            string username)
+        /// <summary>
+        ///     Command constructor
+        /// </summary>
+        /// <param name="details">operation details</param>
+        /// <param name="operationType">operation type</param>
+        /// <param name="username">username</param>
+        public Operation(OperationDetails details, OperationType operationType, string username)
         {
-            _accountNumber = accountNumber;
-            _title = title;
-            _amount = amount;
+            _details = details;
             _operationType = operationType;
             _username = username;
         }
 
+        /// <summary>
+        ///     Command executor
+        /// </summary>
+        /// <param name="context">database context</param>
         public void Execute(DatabaseDataContext context)
         {
-            if (_amount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(_amount), "Value equal or less than zero");
-
-            var account = context.Accounts.SingleOrDefault(acc => acc.Number == _accountNumber.Number);
+            var account = context.Accounts.SingleOrDefault(acc => acc.Number == _details.AccountNumber);
             if (account == null)
-                throw new InvalidOperationException("Account doesn't exist");
+                throw new NotFoundException("Account doesn't exist");
 
             if (account.Customer1.Username != _username)
-                throw new InvalidOperationException("Account doesn't belong to user");
+                throw new NotFoundException("Account doesn't belong to user");
 
-            if ((_operationType == OperationType.Withdraw) && (_amount > account.Balance))
-                throw new InvalidOperationException("Amount is bigger than balance");
+            var amount = _details.Amount.ToDecimal();
+            if ((_operationType == OperationType.Withdraw) && (amount > account.Balance))
+                throw new OperationException("Amount is bigger than balance");
 
-            var amount = _operationType == OperationType.Deposit ? _amount : -_amount;
+            amount = _operationType == OperationType.Deposit ? amount : -amount;
 
-            account.Balance += amount;
+            try
+            {
+                account.Balance += amount;
+            }
+            catch (Exception e)
+            {
+                throw new OperationException(e.Message);
+            }
+
             context.Histories.InsertOnSubmit(new History
             {
-                AccountNumber = _accountNumber.Number,
+                AccountNumber = _details.AccountNumber,
                 Amount = amount,
                 Result = account.Balance,
-                Title = _title,
-                OperationType = $"{_operationType}".ToUpperInvariant()
+                Title = _details.Title,
+                OperationType = $"{_operationType}".ToUpperInvariant(),
+                Date = DateTime.Now
             });
             context.SubmitChanges();
         }

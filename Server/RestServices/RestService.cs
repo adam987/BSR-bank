@@ -1,24 +1,28 @@
-﻿using System;
+﻿using System.Net;
 using System.ServiceModel.Web;
+using Common.Contracts;
 using Server.Database;
 using Server.Database.Commands;
-using Server.Utils;
+using Server.Validators;
 
 namespace Server.RestServices
 {
+    /// <summary>
+    ///     REST service implementation
+    /// </summary>
     public class RestService : IRestService
     {
         private static OutgoingWebResponseContext Response => WebOperationContext.Current?.OutgoingResponse;
 
-        public void Transfer(Transfer transfer)
+        /// <summary>
+        ///     Transfer operation
+        /// </summary>
+        /// <param name="transferDetails">transfer details</param>
+        [TransferDetailsValidator]
+        public void Transfer(TransferDetails transferDetails)
         {
-            try
-            {
-                DatabaseHandler.Execute(new ReceiveTransfer(transfer));
-            }
-            catch (Exception)
-            {
-            }
+            DatabaseHandler.Execute(new ReceiveTransfer(transferDetails));
+            Response.StatusCode = HttpStatusCode.Created;
         }
     }
 }

@@ -8,6 +8,9 @@ using Server.SoapServices;
 
 namespace Server
 {
+    /// <summary>
+    ///     Self hosting
+    /// </summary>
     internal class Program
     {
         private static readonly List<Type> Services = new List<Type> {typeof(SoapService), typeof(RestService)};

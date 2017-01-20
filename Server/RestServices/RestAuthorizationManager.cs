@@ -1,8 +1,11 @@
 ﻿using Server.Configurations;
-using Server.Utils;
+using Server.ServiceConfigurations;
 
 namespace Server.RestServices
 {
+    /// <summary>
+    ///     REST service authorization manager
+    /// </summary>
     public class RestAuthorizationManager : AuthorizationManager
     {
         private static BankInfo _bankInfo;
